@@ -4,8 +4,9 @@ Flappy Bird Clone
 ## EM DESENVOLVIMENTO ##
 
 # Flappy Bird Clone
-![alt text]([http://url/to/img.png](https://cdn.worldvectorlogo.com/logos/flappy-bird.svg))
-Uma implementação básica do jogo Flappy Bird, ainda em desenvolvimento.
+
+Uma implementação básica do jogo Flappy Bird, ainda em desenvolvimento
+![title](https://github.com/ThiagoBxK/Flappy-Bird-Game/assets/129023994/1ed37137-5c4b-4f75-ac62-57c38fc98b2c)
 
 ## IMPORTANTE ##
 **Os canos não foram adicionados!**
