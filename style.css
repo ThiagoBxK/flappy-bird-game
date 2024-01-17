@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  overflow: hidden;
+  width: 380px;
+  height: 608px;
+  overflow: hidden;
+  border: 2px solid #161616;
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  
+}
