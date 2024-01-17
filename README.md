@@ -6,7 +6,7 @@ Flappy Bird Clone
 # Flappy Bird Clone
 
 Uma implementação básica do jogo Flappy Bird, ainda em desenvolvimento
-![title](https://github.com/ThiagoBxK/Flappy-Bird-Game/assets/129023994/0110b94f-df6e-4ecb-957e-96a9fc90ea52)
+![title](https://github.com/ThiagoBxK/Flappy-Bird-Game/assets/129023994/0110b94f-df6e-4ecb-957e-96a9fc90ea52){: width="50%"}
 
 ## IMPORTANTE ##
 **Os canos não foram adicionados!**
