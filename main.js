@@ -1,213 +1,110 @@
-const canvas = document.getElementById('game');
-const context = canvas.getContext('2d');
+const canvas = document.getElementById("game");
+const context = canvas.getContext("2d");
 
-function Game(fps = 60) {
-  const sprites = {};
-  const images = {
-    background: 'background.jpg',
-    floor: 'floor.jpg',
-    bird: 'bird.png',
-    touch: 'touch.png',
-    gameover: 'gameover.png',
-  };
-  
-  for (let key in images) {
-    sprites[key] = new Image();
-    sprites[key].src = `./sprites/${images[key]}`;
-  };
+import { Background, Floor, Scoreboard } from './scenario.js';
+import { getSprites } from './functions.js';
 
-  let score = 0;
-  let scenarioSpeed = 0;
-  let frames = 0;
-  let speed = 1;
-  let screen = 'home';
-  
-  const Bird = {
-    sprite: 0,
-    posY: 250,
-    speed: 1,
-    gravity: 0.5,
-    click() {
-      if (screen !== 'started') return;
+const Bird = {
+  image: null,
+  spriteIndex: 0,
+  posY: 200,
+  gravity: 0.3,
+  gravitySpeed: -5,
+  cutSize: 64, // Tamanho do recorte
+  size: 48, // Tamanho que vai ser mostrado na tela
+  floorColision() {
+    const floor = (this.posY + this.gravitySpeed + 32) >= (canvas.height - Floor.height);
 
-      this.speed = -7;
-      this.draw();
-    },
-    draw() {
-      context.drawImage(
-        sprites.bird,
-        64 * this.sprite, 0,
-        64, 64, 
-        20, this.posY,
-        48, 48
-      );
-    },
-    update() {
-      this.draw();
-
-      // Colisão
-      if (this.posY + 48 >= canvas.height - 100 - speed)
-        return screen = 'gameover';
-      
-      // Mudar sprite do pássaro
-      if (this.sprite >= 2) this.sprite = 0;
-      if (frames % 12 === 0) this.sprite++;
-      
-      // Gravidade
-      this.speed += this.gravity;
-      this.posY += this.speed;
+    if (floor) {
+      Game.currentScreen = 'gameover';
+      this.posY = canvas.height - Floor.height - 34;
     }
-  };
-  
-  // Desenhar na tela
-  const Draw = {
-    background() {
-      context.drawImage(
-        sprites.background,
-        scenarioSpeed, 0,
-        canvas.width, canvas.height,
-        0, 0,
-        canvas.width, canvas.height
-      );
-    },
-    floor() {
-      context.drawImage(
-        sprites.floor,
-        scenarioSpeed * -1, canvas.height - 110,
-        sprites.floor.width, 110
-      );
-    },
-    scoreboard() {
-      // Dependendo da velocidade o score vai subir mais rápido
-      if (frames % (60 / speed) === 0) score++;
-      
-      context.font = "36px 'Press Start 2P'";
-      context.fillStyle = 'white'; 
-      context.fillText(score, (canvas.width / 2) - (context.measureText(score).width / 2), 72);
-    },
-    touch() {
-      context.drawImage(
-        sprites.touch,
-        0, 0,
-        124, 210, 
-        canvas.width / 2 - 37.5, canvas.height / 3,
-        75, 127
-      );
-    }
-  }; 
 
-  const Gameover = {
-    handle() {
-      Draw.background();
-      Draw.floor();
-      
-      context.drawImage(
-        sprites.gameover,
-        0, 0,
-        700, 500, 
-        (canvas.width / 2) - 105, canvas.height / 4 - 75,
-        210, 150
-      );
-    }
-  };
+    return floor;
+  },
+  draw() {
+    context.drawImage(
+      this.image,
+      this.cutSize * this.spriteIndex, 0,
+      this.cutSize, this.cutSize,
+      20, this.posY,
+      this.size, this.size
+    );
+  },
+  click() {
+    this.gravitySpeed = -7;
+  },
+  update(frames) {
+    if (Game.currentScreen === 'gameover') return this.draw();
 
-  const Home = {
-    countdown: 4 * fps,
-    handle() {
-      Draw.background();
-      Draw.floor();
-      Bird.draw();
-      
-      if (screen == 'home') Draw.touch();
-    },
-    timer() {
-      this.countdown--;
-      this.handle();
+    if (this.floorColision()) return;
 
-      const text = this.countdown <= 60 ? 'Start' : parseInt(this.countdown / 60);
-      
-      context.font = this.countdown <= 60 ? "28px 'Press Start 2P'" : "48px 'Press Start 2P'";
-      context.fillStyle = 'white'; 
-      context.fillText(text, (canvas.width / 2) - (context.measureText(text).width / 2), 124);
-      
-      if (this.countdown !== 0) {
-        requestAnimationFrame(this.timer.bind(this));
-      } else {
-        screen = 'started';
-        Game.start();
-      }
-    },
-    click() {
-      screen = 'timer';
-      this.timer();
-    }
-  };
+    // Pipe Colisão
 
-  const Game = {
-    update() {
-      if (screen == 'gameover') return Gameover.handle();
+    // Muda o sprite do pássaro
+    if (frames % 12 === 0) this.spriteIndex++
+    if (this.spriteIndex >= 3) this.spriteIndex = 0;
 
-      // Efeito de cenario infinito
-      if (scenarioSpeed >= canvas.width - 16) scenarioSpeed = 24;
+    // Gravidade
+    this.gravitySpeed += this.gravity;
+    this.posY += this.gravitySpeed;
 
-      frames++;
-      scenarioSpeed += speed;
-      
-      Draw.background();
-      Draw.floor();
-      Draw.scoreboard();
-      Bird.update();
-      
-      setTimeout(() => {
-        requestAnimationFrame(this.update.bind(this));
-      }, 1000 / fps);
-    },
-    reset() {
-      score = 0;
-      scenarioSpeed = 0;
-      frames = 0;
-      speed = 1;
-
-      Bird.sprite = 0;
-      Bird.posY = 250;
-      Bird.speed = 10;
-      Bird.gravity = 0.5;
-      Home.countdown = 4 * fps;
-    },
-    start() {
-      screen = 'started';
-
-      this.reset();
-      this.update();
-    },
-    run() {
-      sprites.touch.onload = () => Home.handle();
-      
-      // Eventos de click tela ou teclado
-      document.body.addEventListener('click', () => {
-        if (screen == 'home') Home.click();
-        // Quando estiver na tela gameover é o usuario clicar ele ira para tela inicial
-        else if (screen == 'gameover') {
-          this.reset();
-          screen = 'home';
-          setTimeout(() => {
-            Home.handle();
-          }, 100);
-        }
-        else if (screen == 'started') Bird.click();
-      });
-
-      document.body.addEventListener('keydown', (key) => {
-        if (screen == 'started' && key.keyCode == 32) {
-          Bird.click();
-        }
-      });
-    }
+    this.draw();
   }
+}
 
-  return Game;
+
+const Game = {
+  interval: undefined,
+  fps: 60,
+  frames: 0,
+  gameOver: false,
+  currentScreen: undefined,
+  start() {
+    this.currentScreen = 'playing';
+
+    this.update();
+  },
+  render: async () => {
+    const { background, floor, bird } = await getSprites();
+
+    Background.image = background;
+    Floor.image = floor;
+    Bird.image = bird;
+
+    Background.draw();
+    Floor.draw();
+    Bird.draw();
+  },
+  update() {
+    if (this.currentScreen === 'gameover') {
+      clearInterval(this.interval)
+
+      console.log(`Voçê morreu com ${this.frames}`)
+      return;
+    }
+
+    this.frames++;
+
+    Background.draw();
+    Floor.draw();
+    Bird.update(this.frames);
+    Scoreboard.draw();
+
+    this.interval = setTimeout(() => this.update(), 1000 / this.fps);
+  }
 };
 
-window.onload = function() {
-  Game().run();
-};
+
+window.onload = () => {
+  Game.render();
+
+  setTimeout(() => {
+    if (!Game.currentScreen) Game.start();
+  }, 100);
+
+  document.body.addEventListener('click', () => {
+    if (!Game.currentScreen) Game.start();
+    else if (Game.currentScreen === 'playing') Bird.click();
+  });
+}
