@@ -5,7 +5,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #4EC0CA;
 }
 
 .container {
@@ -13,7 +12,7 @@ body {
   width: 380px;
   height: 608px;
   overflow: hidden;
-  border: 2px solid #DDD894;
+  border: 2px solid #000;
   border-radius: 12px;
 }
 
