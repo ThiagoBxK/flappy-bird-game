@@ -1,7 +1,8 @@
 const images = {
   background: `background.jpg`,
   floor: `floor.jpg`,
-  bird: `bird.png`
+  bird: `bird.png`,
+  touch: `touch.png`
 };
 
 export function getSprites() {
@@ -21,6 +22,6 @@ export function getSprites() {
   return Promise.all(sprites)
     .then(array => Object.assign({}, ...array))
     .catch(err => {
-      console.err(`getSprites() error:${error}`);
+      console.err(`getSprites() error:${err}`);
     });
 }
