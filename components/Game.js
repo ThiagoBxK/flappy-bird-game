@@ -1,9 +1,15 @@
 import Bird from "./Bird.js";
-import { Floor } from "./Scenarios.js";
+import Pipe from "./Pipe.js";
+import { Floor, Scoreboard } from "./Scenarios.js";
 import Screens from "./Screens.js";
 
+const canvas = document.getElementById("game");
+
 class Game {
-   constructor() { this.interval; }
+   constructor() {
+      this.interval;
+      this.frames = 0;
+   }
 
    static reset() {
       Bird.spriteIndex = 0;
@@ -11,20 +17,27 @@ class Game {
       Bird.gravity = 0.5;
       Bird.gravitySpeed = -5;
 
+      Pipe.reset();
       Screens.Home.render();
    }
 
    static start() {
+      let { frames } = new this;
       Screens.currentScreen = 'started';
 
       this.interval = setInterval(() => {
          if (Floor.colision(Bird.posY, Bird.gravitySpeed)) {
-            clearInterval(this.interval)
+            clearInterval(this.interval);
+            Bird.posY = canvas.height - Floor.height - 36;
             return Screens.Gameover.render();
-         };
+         }
 
-         Screens.render();
+         frames++;
+         if (frames % 100 === 0) Scoreboard.score++;
+
+         Screens.render(frames);
          Bird.update();
+
       }, 1000 / 60)
    }
 }

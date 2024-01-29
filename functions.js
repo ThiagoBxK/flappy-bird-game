@@ -1,11 +1,4 @@
-const images = {
-  background: `background.jpg`,
-  floor: `floor.jpg`,
-  bird: `bird.png`,
-  touch: `touch.png`
-};
-
-export function getSprites() {
+export function getSprites(images) {
   const sprites = Object.keys(images).map(key => {
     return new Promise((resolve, reject) => {
       const image = new Image();
